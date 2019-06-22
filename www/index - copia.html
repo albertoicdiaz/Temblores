@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width">
+      <title>JS NAME</title>
+    </head>
+    <body>
+    <h2>Fecha de Inicio</h2>
+        <form name="form" action="" method="get">
+            <input type="date" name="starttime" id="starttime" value="2019-05-01">
+            <h2>Latitud Mínima</h2>
+            <input type="number" step=0.1 name="minlatitude" id="minlatitude" value="-55.8">
+            <h2>Latitud Máxima</h2>
+            <input type="number" step=0.1 name="maxlatitude" id="maxlatitude" value="-17.4">
+            <h2>Longitud Mínima</h2>
+            <input type="number" step=0.1 name="minlongitude" id="minlongitude" value="-100">
+            <h2>Longitud Máxima</h2>
+            <input type="number" step=0.1 name="maxlongitude" id="maxlongitude" value="-65.8">
+            <h2>Magnitud Mínima</h2>
+            <input type="number" step=0.1 name="minmagnitude" id="minmagnitude" value="4">
+        </form>
+        <button onclick="sub()">Prueba</button>
+    </body>
+    <script>
+    var starttime = null;
+    var minlatitude = null;
+    var maxlatitude = null;
+    var minlongitude = null;
+    var maxlongitude = null;
+    var minmagnitude = null;
+    var url = null;
+    var firsturl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
+    var finalurl = null;
+    var status = null;
+
+        //submit
+        function sub(){
+            starttime = document.getElementById("starttime").value;
+            minlatitude = document.getElementById("minlatitude").value;
+            maxlatitude = document.getElementById("maxlatitude").value;
+            minlongitude = document.getElementById("minlongitude").value;
+            maxlongitude = document.getElementById("maxlongitude").value;
+            minmagnitude = document.getElementById("minmagnitude").value;
+        //  alert(starttime+" "+minlatitude+" "+maxlatitude+" "+minlongitude+" "+maxlongitude+" "+minmagnitude);
+            url="&starttime="+starttime+"&minlatitude="+minlatitude+"&maxlatitude="+maxlatitude+"&minlongitude="+minlongitude+"&maxlongitude="+maxlongitude+"&minmagnitude="+minmagnitude;
+            finalurl=firsturl+url;
+        //    finalurl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-05-01&minlatitude=-55.8&maxlatitude=-17.4&minlongitude=-100&maxlongitude=-65.8&minmagnitude=4";
+            data = JSON.parse(httpGet(finalurl));
+            if (data.features){
+              for(i = 0; i < data.features.length; i ++){
+                // console.log(data['features'][i]['id'], data['features'][i]['properties']['detail']);
+
+                console.log(data['features'][i]['properties']['time'], data['features'][i]['geometry']['coordinates']['0'], data['features'][i]['geometry']['coordinates']['1'], data['features'][i]['properties']['mag']);
+              }
+            }
+        };
+        function httpGet(theUrl)
+        {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+            xmlHttp.send( null );
+            return xmlHttp.responseText;
+        }   
+    </script>
+  </html>
+https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-05-01&minlatitude=-55.8&maxlatitude=-17.4&minlongitude=-100&maxlongitude=-65.8&minmagnitude=4
