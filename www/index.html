@@ -16,6 +16,7 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="js/Moment.js"></script>
 
   <title>Consulta de Temblores de USGS</title>
 
@@ -97,14 +98,15 @@
                 </div>
               </div>        
             </form>     
-            <a class="btn btn-primary btn-xl js-scroll-trigger" onclick="cons();" href="#about">Consultar</a>
-            <table id="myTable">
-                <tr style="color: orangered;">
+            <!-- <a class="btn btn-primary btn-xl js-scroll-trigger" onclick="cons();" href="#about">Consultar</a> -->
+            <button type="submit" class="btn btn-primary btn-xl js-scroll-trigger" onclick="cons();">Consultar</button>
+            <table id="myTable" style="margin-right: 0px;padding-right: 10px;margin-top: 20px;">
+              <!-- <tr id="contenido" style="color: orangered;">
                   <td>Tiempo</td>
                   <td>Latitud</td>
                   <td>Longitud</td>
-                  <td>Magnitud</td>
-                </tr>
+                  <td>Mag</td>
+                </tr> -->
               </table>
             <!-- <div id="container">
               <div id="out"></div>
@@ -120,19 +122,16 @@
 
 <script>
 
-    var out= document.getElementById("out");
     var time=[];
     var latitude=[];
     var longitude = [];
     var magnitude = [];
+    var finaldate = [];
+    var t=[];
+    var minutes =[];
+    var hour =[];
     var starttime = null;
     var minlatitude = null;
-    var table = document.getElementById("myTable");
-    var row = table.insertRow(1);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    var cell4 = row.insertCell(3);
     var maxlatitude = null;
     var minlongitude = null;
     var maxlongitude = null;
@@ -140,48 +139,86 @@
     var url = null;
     var firsturl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
     var finalurl = null;
-    var status = null;
-
+    var estado=1;
 
         //submit
         function cons(){
+            // return timeStampCon;
+            $("#myTable").empty();
             starttime = document.getElementById("starttime").value;
             minlatitude = document.getElementById("minlatitude").value;
             maxlatitude = document.getElementById("maxlatitude").value;
             minlongitude = document.getElementById("minlongitude").value;
             maxlongitude = document.getElementById("maxlongitude").value;
             minmagnitude = document.getElementById("minmagnitude").value;
+            var value1=$.trim($("#starttime").val());
+            var value2=$.trim($("#minlatitude").val());
+            var value3=$.trim($("#maxlatitude").val());
+            var value4=$.trim($("#minlongitude").val());
+            var value5=$.trim($("#maxlongitude").val());
+            var value6=$.trim($("#minmagnitude").val());
+
+
+            if(value1.length==0 || value2.length==0 || value3.length==0 || value4.length==0 || value5.length==0 || value6.length==0 )
+            {
+                alert("Ingrese todos los valores");
+            }else{
             url="&starttime="+starttime+"&minlatitude="+minlatitude+"&maxlatitude="+maxlatitude+"&minlongitude="+minlongitude+"&maxlongitude="+maxlongitude+"&minmagnitude="+minmagnitude;
             finalurl=firsturl+url;
+            alert(finalurl);
         //    finalurl = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-05-01&minlatitude=-55.8&maxlatitude=-17.4&minlongitude=-100&maxlongitude=-65.8&minmagnitude=4";
             data = JSON.parse(httpGet(finalurl));
             if (data.features){
-              for(i = 0; i < data.features.length; i ++){
-                // console.log(data['features'][i]['properties']['time'], data['features'][i]['geometry']['coordinates']['0'], data['features'][i]['geometry']['coordinates']['1'], data['features'][i]['properties']['mag']);
-               time[i]=(data['features'][i]['properties']['time']); 
-               latitude[i]=(data['features'][i]['geometry']['coordinates']['0']);
-               longitude[i]=(data['features'][i]['geometry']['coordinates']['1']); 
-               magnitude[i]=(data['features'][i]['properties']['mag']);
+                for(i = 0; i < data.features.length; i ++){
+                  // console.log(data['features'][i]['properties']['time'], data['features'][i]['geometry']['coordinates']['0'], data['features'][i]['geometry']['coordinates']['1'], data['features'][i]['properties']['mag']);
+                  time[i]=(data['features'][i]['properties']['time']); 
+                  latitude[i]=(data['features'][i]['geometry']['coordinates']['0']);
+                  longitude[i]=(data['features'][i]['geometry']['coordinates']['1']); 
+                  magnitude[i]=(data['features'][i]['properties']['mag']);
+                  t[i]=new Date(time[i]);
+                  if (t[i].getHours()<=9){
+                    hour[i]="0"+t[i].getHours();
+                  }
+                  if (t[i].getMinutes()<=9){
+                    minutes[i]="0"+t[i].getMinutes();
+                  }
+                  if (t[i].getHours()>=10){
+                    hour[i]=t[i].getHours();
+                  }
+                  if (t[i].getMinutes()>=10){
+                    minutes[i]=t[i].getMinutes();
+                  }
+                  // finaldate[i] = t[i].getDate() + '/' + (t[i].getMonth()+1) + '/' + t[i].getFullYear() + " " + t[i].getHours() + ':' + t[i].getMinutes();
+                  finaldate[i] = t[i].getDate() + '/' + (t[i].getMonth()+1) + '/' + t[i].getFullYear() + " " + hour[i] + ':' + minutes[i];
+                  // finaldate[i] = ('0' + t[i].getHours()).slice(-2) + ':' + ('0' + t[i].getMinutes()).slice(-2) + ' (Hora Chile) ' + ('0' + t[i].getDay()).slice(-2)+ '/' + ('0' + t[i].getMonth()).slice(-2)+ '/' + ('0' + t[i].getFullYear()).slice(-2);
+                  // finaldate=a.format("dd.mm.yyyy hh:MM:ss");
+                }
+                // alert (finaldate);
+                //  alert(latitude.length);
+                $('#myTable').append(`
+                                      <tr id="contenido" style="color: orangered;">
+                                      <td>Tiempo</td>
+                                      <td>Latitud</td>
+                                      <td>Longitud</td>
+                                      <td>Mag</td>
+                                      </tr>
+                          `);
+                for (i=0;i<longitude.length;i++){
+
+                  $('#myTable').append(`
+                                  <tr id="cache" style="color:orangered;">
+                                      <td>${finaldate[i]}</td>
+                                      <td>${latitude[i]}</td>
+                                      <td>${longitude[i]}</td>
+                                      <td>${magnitude[i]}</td>
+                                  </tr>
+                          `);
+                }
               }
-              //  alert(latitude.length);
-               for (i=0;i<longitude.length;i++){
-               $('#myTable').append(`
-                                <tr style="color:orangered;">
-                                    <td>${time[i]}</td>
-                                    <td>${latitude[i]}</td>
-                                    <td>${longitude[i]}</td>
-                                    <td>${magnitude[i]}</td>
-                                </tr>
-                        `);
-              }
-              //  cell1.innerHTML = time[i];
-              //  cell2.innerHTML = latitude[i];
-              //  cell3.innerHTML = longitude[i];
-              //  cell4.innerHTML = magnitude[i];
-               
-              }
+              estado=estado+1;
             
             // alert(time + latitude + longitude + magnitude);
+            }
         };
         function httpGet(theUrl)
         {
@@ -190,6 +227,18 @@
             xmlHttp.send( null );
             return xmlHttp.responseText;
         };
+        // function timeConverter(UNIX_timestamp){
+        //   var a = new Date(UNIX_timestamp * 1000);
+        //   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //   var year = a.getFullYear();
+        //   var month = months[a.getMonth()];
+        //   var date = a.getDate();
+        //   var hour = a.getHours();
+        //   var min = a.getMinutes();
+        //   var sec = a.getSeconds();
+        //   var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        //   return time;
+        // };
 
 </script>
 </html>
